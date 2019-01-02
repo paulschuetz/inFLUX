@@ -32,7 +32,8 @@ class ConfigGenerator {
       q = '$doYouWantToUseX a \'Youtube Channel Widget\'?';
       props.useYoutubeChannelWidget = _readBoolValue(q, true, YES);
       if (props.useRssFeedWidget) {
-        // TODO: read all Youtube Channel props
+        q = 'Enter the youtube channel id (can be looked up at https://commentpicker.com/youtube-channel-id.php):';
+        props.youtubeChannelId = _readStringValue(q, null);
       }
       stdout.write('\n');
 
@@ -60,6 +61,7 @@ class ConfigGenerator {
         .map((l) => _replaceIfContains(l, RegExp(r'MaterialColor primaryColor'), RegExp(r'Colors.blue'), props.primaryColor))
         // TODO: also replace the other values...
         .map((l) => _replaceIfContains(l, RegExp(r'String rssFeedUrl'), RegExp(r"'http://rss.cnn.com/rss/edition.rss'"), "'${props.rssFeedUrl}'"))
+        .map((l) => _replaceIfContains(l, RegExp(r'String youtubeChannelId'), RegExp(r"'UCb5TfGtSgvNPVPQawfCFuAw'"), "'${props.youtubeChannelId}'"))
         .toList();
 
     final IOSink sink = dartConfigFile.openWrite();
@@ -122,6 +124,7 @@ class InfluxConfigProperties {
 
   // Youtube channel props:
   bool useYoutubeChannelWidget;
+  String youtubeChannelId;
 
   // styling:
   String primaryColor = 'Colors.red';
