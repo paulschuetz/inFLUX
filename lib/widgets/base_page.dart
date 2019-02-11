@@ -19,6 +19,7 @@ class _BasePageState extends State<BasePage> {
       appBar: AppBar(title: Center(child: Text(InFluxConfig.appBarTitle))),
       body: InFluxNavigator.render(_curIndex),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: InFluxNavigator.pages.map((page) => BottomNavigationBarItem(icon: page.icon, title: Text(page.name))).toList(),
         onTap: (index) => _onTap(index),
         currentIndex: _curIndex,
