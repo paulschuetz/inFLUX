@@ -72,3 +72,7 @@ build/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# Google Sheets private key
+/assets/influx2018-223815-0a1306d72d29.json
+
