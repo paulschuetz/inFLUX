@@ -17,6 +17,7 @@ class GoogleSheetsContactFormSaver{
     if(sheetId == null || sheetId == "") throw new ArgumentError("sheetId can not be null or empty");
   }
 
+  // grant autohorization from Google
   Future grantAuthorization() async{
     //var googleKey = File('./assets/influx2018-223815-0a1306d72d29.json');
     var googleKeyObject = json.decode(await rootBundle.loadString('assets/influx2018-223815-0a1306d72d29.json'));
