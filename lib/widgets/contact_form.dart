@@ -21,9 +21,11 @@ class ContactFormState extends State<ContactForm> {
   var nameController = TextEditingController();
   var nameValidate = false;
 
+  var isLastStep = false;
+
   ContactFormState() {
-    nameController.addListener((){
-      if(nameController.text.length == 1){
+    nameController.addListener(() {
+      if (nameController.text.length == 1) {
         this.setState(() {
           nameValidate = true;
         });
@@ -33,7 +35,6 @@ class ContactFormState extends State<ContactForm> {
 
   @override
   Widget build(BuildContext context) {
-
     var steps = [
       Step(
           title: Text("User"),
@@ -104,7 +105,7 @@ class ContactFormState extends State<ContactForm> {
                 //filled: true,
                 icon: const Icon(Icons.phone),
                 labelStyle:
-                new TextStyle(decorationStyle: TextDecorationStyle.solid)),
+                    new TextStyle(decorationStyle: TextDecorationStyle.solid)),
           )),
       Step(
           title: Text("Issue"),
@@ -127,7 +128,7 @@ class ContactFormState extends State<ContactForm> {
                 //filled: true,
                 icon: const Icon(Icons.chat),
                 labelStyle:
-                new TextStyle(decorationStyle: TextDecorationStyle.solid)),
+                    new TextStyle(decorationStyle: TextDecorationStyle.solid)),
           )),
     ];
 
@@ -135,11 +136,61 @@ class ContactFormState extends State<ContactForm> {
     return Form(
         key: formKey,
         child: Stepper(
+          controlsBuilder: (BuildContext context,
+              {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+            return Row(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: onStepContinue,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 30),
+                    child: Container(
+                      color: Colors.green,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: isLastStep
+                            ? Text(
+                                'Send',
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : Text(
+                                'Continue',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: onStepCancel,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 30),
+                    child: Container(
+                      color: Colors.red,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
           steps: steps,
           type: StepperType.vertical,
           currentStep: stepperIndex,
           onStepContinue: () {
             //if last step show confirmation dialog
+            if (this.stepperIndex == steps.length - 2) {
+              this.setState(() {
+                this.isLastStep = true;
+                this.stepperIndex++;
+              });
+            }
             if (this.stepperIndex == steps.length - 1) {
               if (formKey.currentState.validate()) {
                 formKey.currentState.save();
@@ -180,13 +231,20 @@ class ContactFormState extends State<ContactForm> {
             });
           },
           onStepTapped: (index) {
-            setState(() {
-              this.stepperIndex = index;
-            });
+            if (this.stepperIndex == steps.length - 2) {
+              this.setState(() {
+                this.isLastStep = true;
+                this.stepperIndex++;
+              });
+            }
+            else{
+              setState(() {
+                this.stepperIndex = index;
+              });
+            }
           },
         ));
   }
-
 
   Future _sendForm() async {
     var api = GoogleSheetsContactFormSaver(
