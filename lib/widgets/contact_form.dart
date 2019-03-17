@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:influx/utility/google_sheets/contact_data.dart';
+import 'package:influx/utility/google_sheets/google_sheets_contact_form_saver.dart';
 
 class ContactForm extends StatefulWidget {
   @override
@@ -6,10 +10,10 @@ class ContactForm extends StatefulWidget {
 }
 
 class ContactFormState extends State<ContactForm> {
-  String name;
-  String issue;
-  int email;
-  int phone;
+  String _name;
+  String _issue;
+  String _email;
+  String _phone;
   List<Step> steps;
   int stepperIndex = 0;
   var formKey = GlobalKey<FormState>();
@@ -22,6 +26,12 @@ class ContactFormState extends State<ContactForm> {
   void startNameValidate(){
     this.setState((){this.nameValidate = true;});
   }
+
+  Future sendForm() async {
+    var api = GoogleSheetsContactFormSaver(sheetId: "17uV8R4NyPCdrLTR1gWBHN9HCpQES6jY-jGQ1mmjVojE");
+    await api.grantAuthorization();
+    api.saveContactForm(ContactData(name: this._name, email: this._email, phone: this._phone, issue: this._issue));
+}
 
   ContactFormState() {
 
@@ -36,13 +46,13 @@ class ContactFormState extends State<ContactForm> {
                 keyboardType: TextInputType.text,
                 autocorrect: false,
                 autovalidate: nameValidate,
-                controller: nameController,
+                // controller: nameController,
                 onSaved: (name) {
-                  this.name = name;
+                  this._name = name;
                 },
                 maxLines: 1,
                 validator: (value) {
-                  if (value.isEmpty || value.length < 1) {
+                  if (value.isEmpty || value.length > 20) {
                     return 'Please enter name';
                   }
                 },
@@ -59,12 +69,12 @@ class ContactFormState extends State<ContactForm> {
                 autocorrect: false,
                 autovalidate: true,
                 onSaved: (email) {
-                  this.email = int.tryParse(email) ?? 420;
+                  this._email = email;
                 },
                 maxLines: 1,
                 validator: (value) {
-                  if (value.isEmpty || value.length < 1) {
-                    return 'Please enter your E-Mail';
+                  if (value.isEmpty || value.length > 30) {
+                    return 'Please enter a valid E-Mail';
                   }
                 },
                 decoration: new InputDecoration(
@@ -84,11 +94,11 @@ class ContactFormState extends State<ContactForm> {
             autocorrect: false,
             autovalidate: true,
             onSaved: (phone) {
-              this.phone = int.tryParse(phone) ?? 420;
+              this._phone = phone;
             },
             maxLines: 1,
             validator: (value) {
-              if (value.isEmpty || value.length < 1) {
+              if (value.isEmpty || value.length < 1 || value.length > 15) {
                 return 'Please enter your phone number';
               }
             },
@@ -107,7 +117,7 @@ class ContactFormState extends State<ContactForm> {
             autocorrect: false,
             autovalidate: true,
             onSaved: (issue) {
-              this.issue = issue ?? 420;
+              this._issue = issue;
             },
             maxLines: 7,
             validator: (value) {
@@ -135,13 +145,14 @@ class ContactFormState extends State<ContactForm> {
       child:
           Stepper(
             steps: this.steps,
-            type: StepperType.horizontal,
+            type: StepperType.vertical,
             currentStep: stepperIndex,
             onStepContinue: () {
               //if last step show confirmation dialog
               if(this.stepperIndex == this.steps.length-1){
                 if(formKey.currentState.validate()){
                   formKey.currentState.save();
+                  print("send data: name: ${this._name} mail: $_email phone: $_phone issue: $_issue");
                   showDialog(
                       context: context,
                       builder: (BuildContext context){
@@ -153,8 +164,7 @@ class ContactFormState extends State<ContactForm> {
                                 color: Colors.green,
                                 child: Text("Submit"),
                                 textColor: Colors.white,
-                                onPressed: () => print("send data: name: $name mail: $email phone: $phone issue: $issue")
-
+                                onPressed: () => sendForm().whenComplete(() => Navigator.pop(context))
                               ),
                               RaisedButton(
                                 color: Colors.red,
