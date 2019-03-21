@@ -58,13 +58,7 @@ class TweetItem extends StatelessWidget {
                 (_tweet.entities.media != null)
                     ? Image.network(
                         "${_tweet.entities.media.last.mediaUrlHttps}:medium",
-                        height: _tweet.entities.media.last.sizes.medium.height
-                                    .toDouble() <
-                                400
-                            ? _tweet.entities.media.last.sizes.medium.height
-                                .toDouble()
-                            : 400,
-                        fit: BoxFit.fitHeight,
+                        fit: BoxFit.fitWidth,
                       )
                     : Container()
               ],
