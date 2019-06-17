@@ -18,7 +18,8 @@ class YoutubeVideoListItem extends StatelessWidget {
     return Column(
       children: <Widget>[
         GestureDetector(
-          onTap: () => launch("https://www.youtube.com/watch?v=${videoInfo.id}"),
+          onTap: () =>
+              launch("https://www.youtube.com/watch?v=${videoInfo.id}"),
           child: Column(
             children: <Widget>[
               Row(

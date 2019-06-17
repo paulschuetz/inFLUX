@@ -19,11 +19,13 @@ void main() {
     expect(user.name, "Christian Solmecke");
   });
 
-  test('fetching @solmecke tweets older than tweet with id 1086227593605668864', () async {
+  test('fetching @solmecke tweets older than tweet with id 1086227593605668864',
+      () async {
     var twitter = TwitterApiClient(
         bearerToken: InFluxConfig.twitterApiKey, client: Client());
-    var tweets = await twitter.getTweets(twitterName: "solmecke", count: 10, olderThanId: 1086227593605668864);
-
+    var tweets = await twitter.getTweets(
+        twitterName: "solmecke", count: 10, olderThanId: 1086227593605668864);
+    expect(tweets.length, 10);
     tweets.forEach((tweet) => expect(tweet.user.name, "Christian Solmecke"));
   });
 
@@ -43,5 +45,3 @@ void main() {
         .map((turl) => UrlInText(turl.indices[0], turl.indices[1]));
   });
 }
-
-
